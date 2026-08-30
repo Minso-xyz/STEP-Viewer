@@ -1,0 +1,20 @@
+# Visual Studio
+.vs/
+x64/
+Debug/
+Release/
+ 
+# User files
+*.user
+*.VC.db
+*.VC.opendb
+ 
+# NuGet
+packages/
+ 
+# Build outputs
+*.obj
+*.pdb
+*.ilk
+*.exe
+*.dll

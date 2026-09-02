@@ -1,4 +1,5 @@
 #pragma once
+#include <GLFW/glfw3.h>
 
 class Camera
 {
@@ -14,4 +15,6 @@ public:
 	void ApplyProjection(int width, int height);
 
 	void ApplyView();
+
+	void HandleInput(GLFWwindow* window);
 };

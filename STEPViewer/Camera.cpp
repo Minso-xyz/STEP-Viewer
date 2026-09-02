@@ -54,3 +54,42 @@ void Camera::ApplyView()
 		1.0f,
 		0.0f);
 }
+
+void Camera::HandleInput(GLFWwindow* window)
+{
+	// Zoom-in
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		 Zoom -= 0.01f;
+	}
+
+	// Zoom-out
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		Zoom += 0.01f;
+	}
+
+	// Orbit Left
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	{
+		Yaw -= 0.05f;
+	}
+
+	// Orbit Right
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	{
+		Yaw += 0.05f;
+	}
+
+	// Pitch Up
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		Pitch -= 0.05f;
+	}
+
+	// Pitch Down
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		Pitch += 0.05f;
+	}
+}

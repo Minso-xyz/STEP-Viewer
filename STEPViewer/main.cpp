@@ -28,9 +28,6 @@ int main()
 	Camera camera;
 	Renderer renderer;
 
-	Point3D point(0.5, 0.3, 0);
-	Line3D line(Point3D(-0.5, -0.5, 0), Point3D(0.5, 0.5, 0));
-
 	while (!glfwWindowShouldClose(window))
 	{
 		int width;
@@ -44,27 +41,22 @@ int main()
 		camera.ApplyView();
 		renderer.DrawCoordinateAxis();
 
+		// Draw Point
 		Point3D point(0.5, 0.3, 0.0);
 		renderer.DrawPoint(point);
 
+		// Draw Line
 		Line3D line(
 			Point3D(-0.5, -0.5, 0.0),
 			Point3D(0.5, 0.5, 0.0));
-
 		renderer.DrawLine(line);
 
-		//// Background with black color
-		//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		//glClear(GL_COLOR_BUFFER_BIT);
-		//
-		//renderer.DrawCoordinateAxis();   // Draw X,Y coordinate axis
-		//renderer.DrawPoint(point);   // Draw Point3D from GeoKernel3D
-		//renderer.DrawLine(line);   // Draw Line3D
-
-		renderer.DrawCube();   // Draw cube
+		// Draw cube
+		renderer.DrawCube();   
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();   // handle the mouse/keyboard inputs
+		camera.HandleInput(window);
 	}
 
 	glfwTerminate();

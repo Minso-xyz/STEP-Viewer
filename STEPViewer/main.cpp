@@ -35,6 +35,7 @@ int main()
 	reader.BuildEntityMap(lines);
 	std::vector<Point3D> points = reader.ExtractPointsFromAllLines(lines);
 	std::vector<Vertex> vertices = reader.ExtractVerticesFromAllLines(lines);
+	std::vector<Edge> edges = reader.ExtractEdgesFromAllLines(lines);
 	
 	while (!glfwWindowShouldClose(window))
 	{
@@ -53,11 +54,11 @@ int main()
 		//Point3D point(0.5, 0.3, 0.0);
 		//renderer.DrawPoint(point);
 
-		// Draw Line
-		Line3D line(
-			Point3D(-0.5, -0.5, 0.0),
-			Point3D(0.5, 0.5, 0.0));
-		renderer.DrawLine(line);
+		//// Draw Line
+		//Line3D line(
+		//	Point3D(-0.5, -0.5, 0.0),
+		//	Point3D(0.5, 0.5, 0.0));
+		//renderer.DrawLine(line);
 
 		//// Draw cube
 		//renderer.DrawCube();
@@ -65,6 +66,7 @@ int main()
 		// Draw Wireframe cube from the step file
 		//reader.DrawPoints(renderer, points);
 		reader.DrawVertices(renderer, vertices);
+		reader.DrawEdges(renderer, edges);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();   // handle the mouse/keyboard inputs

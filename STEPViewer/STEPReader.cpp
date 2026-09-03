@@ -50,9 +50,9 @@ Point3D STEPReader::ParseCartesianPoint(const std::string& line)
 	// line : #1247=CARTESIAN_POINT('',(0.,0.,0.));
 	// coords : 0.,0.,0.
 
-	int start = line.find(",(");
-	int end = line.find(")");
-	std::string coords = line.substr(start + 3, end - (start + 3));
+	int start = line.find("('',(");
+	int end = line.rfind(")");
+	std::string coords = line.substr(start + 5, end - (start + 5));
 
 	std::stringstream ss(coords);
 	std::string x_str;
@@ -85,6 +85,32 @@ Point3D STEPReader::ParseVertexPoint(const std::string& line)
 	return ParseCartesianPoint(pointLine);   // returns Point3D
 }
 
+Edge STEPReader::ParseEdgeCurve(const std::string& line)
+{
+	// #70=EDGE_CURVE('',#20,#21,#50,.T.);
+	// #20 : Start / #21 : End
+	int start = line.find(',');
+	std::string idStr = line.substr(start + 1, 20);   // returns #20,#21,#50,.T.);
+
+	std::stringstream ss(idStr);
+	std::string startId;
+	std::string endId;
+
+	// returns the start-end point id
+	std::getline(ss, startId, ',');
+	std::getline(ss, endId, ',');
+
+	// retrieve the vertex line corresponding to startId-endId
+	std::string startVertexLine = entityMap[startId];
+	std::string endVertexLine = entityMap[endId];
+
+	// parse the point
+	Point3D startPoint = ParseVertexPoint(startVertexLine);
+	Point3D endPoint = ParseVertexPoint(endVertexLine);
+
+	return Edge(startPoint, endPoint);
+}
+
 std::vector<Vertex> STEPReader::ExtractVerticesFromAllLines(std::vector<std::string> lines)
 {
 	std::vector<Vertex> vertices;
@@ -92,7 +118,7 @@ std::vector<Vertex> STEPReader::ExtractVerticesFromAllLines(std::vector<std::str
 
 	for (int i = 0; i < lines.size(); i++)
 	{
-		if (lines[i].find("VERTEX_POINT") != std::string::npos)
+		if (lines[i].find("=VERTEX_POINT") != std::string::npos)
 		{
 			Point3D point = ParseVertexPoint(lines[i]);
 			vertices.push_back(Vertex(point));
@@ -108,13 +134,29 @@ std::vector<Point3D> STEPReader::ExtractPointsFromAllLines(std::vector<std::stri
 
 	for (int i = 0; i < lines.size(); i++)
 	{
-		if (lines[i].find("CARTESIAN_POINT") != std::string::npos)
+		if (lines[i].find("=CARTESIAN_POINT") != std::string::npos)
 		{
 			point =  ParseCartesianPoint(lines[i]);
 			points.push_back(point);
 		}
 	}
 	return points;
+}
+
+std::vector<Edge> STEPReader::ExtractEdgesFromAllLines(std::vector<std::string> lines)
+{
+	std::vector<Edge> edges;
+	Edge edge;
+
+	for (const auto& line : lines)
+	{
+		if (line.find("=EDGE_CURVE") != std::string::npos)
+		{
+			edge = ParseEdgeCurve(line);
+			edges.push_back(edge);
+		}
+	}
+	return edges;
 }
 
 void STEPReader::DrawPoints(Renderer& renderer, std::vector<Point3D> points)
@@ -130,6 +172,14 @@ void STEPReader::DrawVertices(Renderer& renderer, std::vector<Vertex>& vertices)
 	for (int i = 0; i < vertices.size(); i++)
 	{
 		renderer.DrawVertex(vertices[i]);
+	}
+}
+
+void STEPReader::DrawEdges(Renderer& renderer, std::vector<Edge> edges)
+{
+	for (const auto& edge : edges)
+	{
+		renderer.DrawEdge(edge);
 	}
 }
 

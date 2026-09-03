@@ -5,6 +5,7 @@
 #include "Renderer.h"
 #include <vector>
 #include "Camera.h"
+#include "STEPReader.h"
 
 int main()
 {
@@ -27,7 +28,14 @@ int main()
 
 	Camera camera;
 	Renderer renderer;
+	STEPReader reader;
 
+	// Read the WireframeCube.stp file
+	std::vector<std::string> lines = reader.ReadAllLines("..\\WireframeCube.stp");
+	reader.BuildEntityMap(lines);
+	std::vector<Point3D> points = reader.ExtractPointsFromAllLines(lines);
+	std::vector<Vertex> vertices = reader.ExtractVerticesFromAllLines(lines);
+	
 	while (!glfwWindowShouldClose(window))
 	{
 		int width;
@@ -41,9 +49,9 @@ int main()
 		camera.ApplyView();
 		renderer.DrawCoordinateAxis();
 
-		// Draw Point
-		Point3D point(0.5, 0.3, 0.0);
-		renderer.DrawPoint(point);
+		//// Draw Point
+		//Point3D point(0.5, 0.3, 0.0);
+		//renderer.DrawPoint(point);
 
 		// Draw Line
 		Line3D line(
@@ -51,8 +59,12 @@ int main()
 			Point3D(0.5, 0.5, 0.0));
 		renderer.DrawLine(line);
 
-		// Draw cube
-		renderer.DrawCube();   
+		//// Draw cube
+		//renderer.DrawCube();
+
+		// Draw Wireframe cube from the step file
+		//reader.DrawPoints(renderer, points);
+		reader.DrawVertices(renderer, vertices);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();   // handle the mouse/keyboard inputs

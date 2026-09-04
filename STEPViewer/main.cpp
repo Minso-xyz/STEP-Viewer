@@ -36,7 +36,8 @@ int main()
 	std::vector<Point3D> points = reader.ExtractPointsFromAllLines(lines);
 	std::vector<Vertex> vertices = reader.ExtractVerticesFromAllLines(lines);
 	std::vector<Edge> edges = reader.ExtractEdgesFromAllLines(lines);
-	
+	std::vector<Vector3D> directions = reader.ExtractDirectionsFromAllLines(lines);
+
 	while (!glfwWindowShouldClose(window))
 	{
 		int width;

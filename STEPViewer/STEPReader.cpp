@@ -7,6 +7,7 @@
 #include "Renderer.h"
 #include <sstream>
 #include <map>
+#include "Line3D.h"
 
 std::vector<std::string> STEPReader::ReadAllLines(const std::string& filePath)
 {
@@ -111,6 +112,46 @@ Edge STEPReader::ParseEdgeCurve(const std::string& line)
 	return Edge(startPoint, endPoint);
 }
 
+Vector3D STEPReader::ParseDirection(const std::string& line)
+{
+	// #30=DIRECTION('',(1.0,0.0,0.0));
+	int start = line.find(',');
+	int end = line.find(';');
+	std::string coords = line.substr(start + 2, end - 2 -(start + 2));   // returns 1.0,0.0,0.0
+
+	std::stringstream ss(coords);
+	std::string xText;
+	std::string yText;
+	std::string zText;
+
+	std::getline(ss, xText, ',');
+	std::getline(ss, yText, ',');
+	std::getline(ss, zText, ')');
+
+	double x = std::stod(xText);
+	double y = std::stod(yText);
+	double z = std::stod(zText);
+
+	return Vector3D(x,y,z);
+}
+
+Line3D STEPReader::ParseLine(const std::string& line)
+{
+	// #50=LINE('',#10,#40);
+	int start = line.find(',');
+	std::string idStr = line.substr(start + 1, 20);   // returns #10,#40);
+
+	std::stringstream ss(idStr);
+	std::string pointId;
+	std::string vectorId;
+
+	// returns CARTESIAN_POINT and VECTOR
+	std::getline(ss, pointId, ',');
+	std::getline(ss, vectorId, ')');
+
+	return Line3D(Point3D(0, 0, 0), Point3D(0, 0, 0));;
+}
+
 std::vector<Vertex> STEPReader::ExtractVerticesFromAllLines(std::vector<std::string> lines)
 {
 	std::vector<Vertex> vertices;
@@ -157,6 +198,22 @@ std::vector<Edge> STEPReader::ExtractEdgesFromAllLines(std::vector<std::string> 
 		}
 	}
 	return edges;
+}
+
+std::vector<Vector3D> STEPReader::ExtractDirectionsFromAllLines(std::vector<std::string> lines)
+{
+	std::vector<Vector3D> directions;
+	Vector3D direction;
+
+	for (const auto& line : lines)
+	{
+		if (line.find("=DIRECTION") != std::string::npos)
+		{
+			direction = ParseDirection(line);
+			directions.push_back(direction);
+		}
+	}
+	return directions;
 }
 
 void STEPReader::DrawPoints(Renderer& renderer, std::vector<Point3D> points)

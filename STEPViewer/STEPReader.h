@@ -14,11 +14,14 @@ public:
 	void BuildEntityMap(const std::vector<std::string>& lines);
 	Point3D ParseCartesianPoint(const std::string& line);
 	Edge ParseEdgeCurve(const std::string& line);
+	Vector3D ParseDirection(const std::string& line);
+	Line3D ParseLine(const std::string& line);
 	std::vector<Point3D> ExtractPointsFromAllLines(std::vector<std::string> lines);
 	void DrawPoints(Renderer& renderer, std::vector<Point3D> points);
 	Point3D ParseVertexPoint(const std::string& line);
 	std::vector<Vertex> ExtractVerticesFromAllLines(std::vector<std::string> lines);
 	std::vector<Edge> ExtractEdgesFromAllLines(std::vector<std::string> lines);
+	std::vector<Vector3D> ExtractDirectionsFromAllLines(std::vector<std::string> lines);
 	void DrawVertices(Renderer& renderer, std::vector<Vertex>& vertices);
 	void DrawEdges(Renderer& renderer, std::vector<Edge> edges);
 };

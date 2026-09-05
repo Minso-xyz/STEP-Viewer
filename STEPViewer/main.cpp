@@ -6,6 +6,7 @@
 #include <vector>
 #include "Camera.h"
 #include "STEPReader.h"
+#include "Circle3D.h"
 
 int main()
 {
@@ -30,15 +31,20 @@ int main()
 	Renderer renderer;
 	STEPReader reader;
 
-	// Read the WireframeCube.stp file
-	std::vector<std::string> lines = reader.ReadAllLines("..\\WireframeCube.stp");
+	//// Read the WireframeCube.stp file
+	//std::vector<std::string> lines = reader.ReadAllLines("..\\WireframeCube.stp");
+
+	// Read the ImpellerOpen.stp file
+	std::vector<std::string> lines = reader.ReadAllLines("..\\ImpellerOpen.stp");
+
 	reader.BuildEntityMap(lines);
 	std::vector<Point3D> points = reader.ExtractPointsFromAllLines(lines);
 	std::vector<Vertex> vertices = reader.ExtractVerticesFromAllLines(lines);
 	std::vector<Edge> edges = reader.ExtractEdgesFromAllLines(lines);
 	std::vector<Vector3D> directions = reader.ExtractDirectionsFromAllLines(lines);
 	std::vector<Vector3D> vectors = reader.ExtractVectorsFromAllLines(lines);
-	std::vector<Line3D> lines3D = reader.ExtractLinesFrommAllLines(lines);
+	std::vector<Line3D> lines3D = reader.ExtractLinesFromAllLines(lines);
+	std::vector<Circle3D> circles = reader.ExtractCirclesFromAllLines(lines);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -68,6 +74,8 @@ int main()
 
 		// Draw Wireframe cube from the step file
 		//reader.DrawPoints(renderer, points);
+
+
 		reader.DrawVertices(renderer, vertices);
 		reader.DrawEdges(renderer, edges);
 

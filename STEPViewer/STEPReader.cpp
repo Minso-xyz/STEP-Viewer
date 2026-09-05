@@ -8,6 +8,8 @@
 #include <sstream>
 #include <map>
 #include "Line3D.h"
+#include "Circle3D.h"
+#include "Axis2Placement3D.h"
 
 std::vector<std::string> STEPReader::ReadAllLines(const std::string& filePath)
 {
@@ -183,6 +185,55 @@ Line3D STEPReader::ParseLine(const std::string& line)
 	return Line3D(startPoint, endPoint);
 }
 
+Circle3D STEPReader::ParseCircle(const std::string& line)
+{
+	// #2124 = CIRCLE('', #2337, 55.);
+	int start = line.find(',');
+	std::string idStr = line.substr(start + 1, 20);   // returns #2337, 55.);
+
+	std::stringstream ss(idStr);
+	std::string positionId;
+	std::string radiusText;
+
+	// returns the ID of AXIS2_PLACEMENT_3D and radius
+	std::getline(ss, positionId, ',');
+	std::getline(ss, radiusText, ')');
+
+	std::string positionLine = entityMap[positionId];   // #2336=AXIS2_PLACEMENT_3D('',#3398,#2666,#2667);
+	double radius = std::stod(radiusText);
+
+	Axis2Placement3D position = ParseAxis2Placement3D(positionLine);
+
+	return Circle3D(position, radius);
+}
+
+Axis2Placement3D STEPReader::ParseAxis2Placement3D(const std::string& line)
+{
+	// #2336=AXIS2_PLACEMENT_3D('',#3398,#2666,#2667);
+	int start = line.find(',');
+	std::string idStr = line.substr(start + 1, 20);   // returns #3398,#2666,#2667);
+
+	std::stringstream ss(idStr);
+	std::string originId;
+	std::string normalId;
+	std::string xDirectionId;
+
+	// returns the ID of Origin (CARTESIAN_POINT), Normal/Z-direction (VECTOR), X-direction/Ref-direction (VECTOR)
+	std::getline(ss, originId, ',');
+	std::getline(ss, normalId, ',');
+	std::getline(ss, xDirectionId, ')');
+
+	std::string originLine = entityMap[originId];
+	std::string normalLine = entityMap[normalId];
+	std::string xDirectionLine = entityMap[xDirectionId];
+
+	Point3D origin = STEPReader::ParseCartesianPoint(originLine);
+	Vector3D normal = STEPReader::ParseDirection(normalLine);
+	Vector3D xDirection = STEPReader::ParseDirection(xDirectionLine);
+
+	return Axis2Placement3D(origin, normal, xDirection);
+}
+
 std::vector<Vertex> STEPReader::ExtractVerticesFromAllLines(std::vector<std::string> lines)
 {
 	std::vector<Vertex> vertices;
@@ -263,20 +314,36 @@ std::vector<Vector3D> STEPReader::ExtractVectorsFromAllLines(std::vector<std::st
 	return vectors;
 }
 
-std::vector<Line3D> STEPReader::ExtractLinesFrommAllLines(std::vector<std::string> lines)
+std::vector<Line3D> STEPReader::ExtractLinesFromAllLines(std::vector<std::string> lines)
 {
 	std::vector<Line3D> lines3D;
 	Line3D line3D;
 
 	for (const auto& line : lines)
 	{
-		if (line.find("=VECTOR") != std::string::npos)
+		if (line.find("=LINE") != std::string::npos)
 		{
 			line3D = ParseLine(line);
 			lines3D.push_back(line3D);
 		}
 	}
 	return lines3D;
+}
+
+std::vector<Circle3D> STEPReader::ExtractCirclesFromAllLines(std::vector<std::string> lines)
+{
+	std::vector<Circle3D> circles;
+	Circle3D circle;
+
+	for (const auto& line : lines)
+	{
+		if (line.find("=CIRCLE") != std::string::npos)
+		{
+			circle = ParseCircle(line);
+			circles.push_back(circle);
+		}
+	}
+	return circles;
 }
 
 void STEPReader::DrawPoints(Renderer& renderer, std::vector<Point3D> points)

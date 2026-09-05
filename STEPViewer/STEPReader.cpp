@@ -135,6 +135,27 @@ Vector3D STEPReader::ParseDirection(const std::string& line)
 	return Vector3D(x,y,z);
 }
 
+Vector3D STEPReader::ParseVector(const std::string& line)
+{
+	// #40=VECTOR('',#30,1.0);   // #30: Direction, 1.0: Magnitude
+	int start = line.find(',');
+	int end = line.find(';');
+	std::string str = line.substr(start + 1, end - 1 - (start + 1));   // returns #30,1.0
+
+	std::stringstream ss(str);
+	std::string vectorId;
+	std::string magnitudeText;
+
+	std::getline(ss, vectorId, ',');   // #31
+	std::getline(ss, magnitudeText, ',');   // 1.0
+
+	std::string vectorLine = entityMap[vectorId];   // #31=DIRECTION('',(0.0,1.0,0.0));
+	Vector3D direction = ParseDirection(vectorLine);
+	double magnitude = std::stof(magnitudeText);
+
+	return direction * magnitude;
+}
+
 Line3D STEPReader::ParseLine(const std::string& line)
 {
 	// #50=LINE('',#10,#40);
@@ -214,6 +235,22 @@ std::vector<Vector3D> STEPReader::ExtractDirectionsFromAllLines(std::vector<std:
 		}
 	}
 	return directions;
+}
+
+std::vector<Vector3D> STEPReader::ExtractVectorsFromAllLines(std::vector<std::string> lines)
+{
+	std::vector<Vector3D> vectors;
+	Vector3D vector;
+
+	for (const auto& line : lines)
+	{
+		if (line.find("=VECTOR") != std::string::npos)
+		{
+			vector = ParseVector(line);
+			vectors.push_back(vector);
+		}
+	}
+	return vectors;
 }
 
 void STEPReader::DrawPoints(Renderer& renderer, std::vector<Point3D> points)

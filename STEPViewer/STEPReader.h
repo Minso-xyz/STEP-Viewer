@@ -24,6 +24,7 @@ public:
 	std::vector<Edge> ExtractEdgesFromAllLines(std::vector<std::string> lines);
 	std::vector<Vector3D> ExtractDirectionsFromAllLines(std::vector<std::string> lines);
 	std::vector<Vector3D> ExtractVectorsFromAllLines(std::vector<std::string> lines);
+	std::vector<Line3D> ExtractLinesFrommAllLines(std::vector<std::string> lines);
 	void DrawVertices(Renderer& renderer, std::vector<Vertex>& vertices);
 	void DrawEdges(Renderer& renderer, std::vector<Edge> edges);
 };

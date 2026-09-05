@@ -170,7 +170,17 @@ Line3D STEPReader::ParseLine(const std::string& line)
 	std::getline(ss, pointId, ',');
 	std::getline(ss, vectorId, ')');
 
-	return Line3D(Point3D(0, 0, 0), Point3D(0, 0, 0));;
+	std::string pointLine = entityMap[pointId];
+	std::string vectorLine = entityMap[vectorId];
+
+	Point3D startPoint = ParseCartesianPoint(pointLine);
+	Vector3D vector = ParseVector(vectorLine);
+	Point3D endPoint = Point3D(
+		startPoint.X + vector.X,
+		startPoint.Y + vector.Y,
+		startPoint.Z + vector.Z);
+
+	return Line3D(startPoint, endPoint);
 }
 
 std::vector<Vertex> STEPReader::ExtractVerticesFromAllLines(std::vector<std::string> lines)
@@ -251,6 +261,22 @@ std::vector<Vector3D> STEPReader::ExtractVectorsFromAllLines(std::vector<std::st
 		}
 	}
 	return vectors;
+}
+
+std::vector<Line3D> STEPReader::ExtractLinesFrommAllLines(std::vector<std::string> lines)
+{
+	std::vector<Line3D> lines3D;
+	Line3D line3D;
+
+	for (const auto& line : lines)
+	{
+		if (line.find("=VECTOR") != std::string::npos)
+		{
+			line3D = ParseLine(line);
+			lines3D.push_back(line3D);
+		}
+	}
+	return lines3D;
 }
 
 void STEPReader::DrawPoints(Renderer& renderer, std::vector<Point3D> points)

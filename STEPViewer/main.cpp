@@ -38,6 +38,7 @@ int main()
 	std::vector<Edge> edges = reader.ExtractEdgesFromAllLines(lines);
 	std::vector<Vector3D> directions = reader.ExtractDirectionsFromAllLines(lines);
 	std::vector<Vector3D> vectors = reader.ExtractVectorsFromAllLines(lines);
+	std::vector<Line3D> lines3D = reader.ExtractLinesFrommAllLines(lines);
 
 	while (!glfwWindowShouldClose(window))
 	{

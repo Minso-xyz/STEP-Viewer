@@ -77,19 +77,19 @@ void Renderer::DrawCoordinateAxis()
 	glBegin(GL_LINES);
 
 	// X-Axis (Red)
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(-1.5f, 0.0f, 0.0f);
-	glVertex3f(1.5f, 0.0f, 0.0f);
+	glColor3f(150.0f, 0.0f, 0.0f);
+	glVertex3f(-150.0f, 0.0f, 0.0f);
+	glVertex3f(150.0f, 0.0f, 0.0f);
 
 	// Y-Axis (Green)
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(0.0f, -1.5f, 0.0f);
-	glVertex3f(0.0f, 1.5f, 0.0f);
+	glColor3f(0.0f, 200.0f, 0.0f);
+	glVertex3f(0.0f, -200.0f, 0.0f);
+	glVertex3f(0.0f, 200.0f, 0.0f);
 
 	// Z-Axis (Blue)
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(0.0f, 0.0f, -1.5f);
-	glVertex3f(0.0f, 0.0f, 1.5f);
+	glColor3f(0.0f, 0.0f, 150.0f);
+	glVertex3f(0.0f, 0.0f, -150.0f);
+	glVertex3f(0.0f, 0.0f, 150.0f);
 
 	glEnd();
 }

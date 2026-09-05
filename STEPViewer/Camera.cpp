@@ -5,8 +5,8 @@ Camera::Camera()
 {
 	Distance = 5.0f;
 	Yaw = 45.0f;
-	Pitch = 35.0f;
-	Zoom = 1.5f;
+	Pitch = -135.0f;
+	Zoom = 150.0f;
 }
 
 void Camera::ApplyProjection(int width, int height)

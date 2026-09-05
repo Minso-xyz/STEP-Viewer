@@ -370,6 +370,12 @@ void STEPReader::DrawEdges(Renderer& renderer, std::vector<Edge> edges)
 	}
 }
 
-
+void STEPReader::DrawLines(Renderer& renderer, std::vector<Line3D> lines)
+{
+	for (const auto& line : lines)
+	{
+		renderer.DrawLine(line);
+	}
+}
 
 

@@ -79,6 +79,8 @@ int main()
 		reader.DrawVertices(renderer, vertices);
 		reader.DrawEdges(renderer, edges);
 
+		reader.DrawLines(renderer, lines3D);
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();   // handle the mouse/keyboard inputs
 		camera.HandleInput(window);

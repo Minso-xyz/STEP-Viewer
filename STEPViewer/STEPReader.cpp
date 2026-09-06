@@ -10,6 +10,7 @@
 #include "Line3D.h"
 #include "Circle3D.h"
 #include "Axis2Placement3D.h"
+#include "BoundingBox.h"
 
 std::vector<std::string> STEPReader::ReadAllLines(const std::string& filePath)
 {
@@ -385,5 +386,8 @@ void STEPReader::DrawCircles(Renderer& renderer, std::vector<Circle3D> circles)
 		renderer.DrawCircle(circle);
 	}
 }
+
+
+
 
 

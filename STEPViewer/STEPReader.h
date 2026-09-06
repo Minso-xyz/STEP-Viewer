@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include "Circle3D.h"
+#include "BoundingBox.h"
 
 class STEPReader
 {
@@ -33,4 +34,7 @@ public:
 	void DrawEdges(Renderer& renderer, std::vector<Edge> edges);
 	void DrawLines(Renderer& renderer, std::vector<Line3D> lines);
 	void DrawCircles(Renderer& renderer, std::vector<Circle3D> circles);
+	BoundingBox CalculateBoundingBox(std::vector<Point3D> points);
+	Point3D GetModelCenter(BoundingBox boundingBox);
+	double GetModelRadius(BoundingBox boundingBox);
 };

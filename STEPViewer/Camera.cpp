@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include <GLFW/glfw3.h>
+#include "BoundingBox.h"
 
 Camera::Camera()
 {
@@ -17,6 +18,7 @@ void Camera::ApplyProjection(int width, int height)
 	}
 
 	float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+	float depthRange = Zoom * 10.0f;
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -26,8 +28,8 @@ void Camera::ApplyProjection(int width, int height)
 		Zoom * aspectRatio,
 		-Zoom,
 		Zoom,
-		-100.0,
-		100.0);
+		-depthRange,
+		depthRange);
 
 	glMatrixMode(GL_MODELVIEW);
 }
@@ -36,11 +38,13 @@ void Camera::ApplyView()
 {
 	glLoadIdentity();
 
+	// Define how far is the camera
 	glTranslatef(
 		0.0f,
 		0.0f,
 		-Distance);
 
+	// Rotate the view as Isometric
 	glRotatef(
 		Pitch,
 		1.0f,
@@ -53,6 +57,12 @@ void Camera::ApplyView()
 		0.0f,
 		1.0f,
 		0.0f);
+
+	// Define where the camera sees
+	glTranslatef(
+		static_cast<float>(-Target.X),
+		static_cast<float>(-Target.Y),
+		static_cast<float>(-Target.Z));
 }
 
 void Camera::HandleInput(GLFWwindow* window)
@@ -60,13 +70,13 @@ void Camera::HandleInput(GLFWwindow* window)
 	// Zoom-in
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		 Zoom -= 0.01f;
+		 Zoom -= Zoom * 0.005f;
 	}
 
 	// Zoom-out
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		Zoom += 0.01f;
+		Zoom += Zoom * 0.005f;
 	}
 
 	// Orbit Left
@@ -92,4 +102,19 @@ void Camera::HandleInput(GLFWwindow* window)
 	{
 		Pitch += 0.05f;
 	}
+}
+
+void Camera::FitTargetBox(const BoundingBox& boundingBox)
+{
+	Target = boundingBox.GetCenter();
+
+	double radius = boundingBox.GetModelRadius();
+
+	if (radius < 0.001)
+	{
+		radius = 1.0;
+	}
+
+	Zoom = static_cast<float>(radius * 1.25);
+	Distance = static_cast<float>(radius * 3.0);
 }

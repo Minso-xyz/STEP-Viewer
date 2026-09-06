@@ -142,6 +142,11 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="STEPReader.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\GeoKernel3D\GeoKernel3D\GeoKernel3D.vcxproj">
+      <Project>{841eb6e8-063f-4fee-ab3b-33832f3b9a3c}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\glfw.3.4.0\build\native\glfw.targets" Condition="Exists('..\packages\glfw.3.4.0\build\native\glfw.targets')" />

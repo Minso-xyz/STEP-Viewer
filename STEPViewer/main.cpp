@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "STEPReader.h"
 #include "Circle3D.h"
+#include "BoundingBox.h"
 
 int main()
 {
@@ -31,6 +32,8 @@ int main()
 	Renderer renderer;
 	STEPReader reader;
 
+	
+
 	//// Read the WireframeCube.stp file
 	//std::vector<std::string> lines = reader.ReadAllLines("..\\WireframeCube.stp");
 
@@ -45,6 +48,26 @@ int main()
 	std::vector<Vector3D> vectors = reader.ExtractVectorsFromAllLines(lines);
 	std::vector<Line3D> lines3D = reader.ExtractLinesFromAllLines(lines);
 	std::vector<Circle3D> circles = reader.ExtractCirclesFromAllLines(lines);
+
+	// Get the points from the edges
+	std::vector<Point3D> modelPoints;
+	for (const Edge& edge : edges)
+	{
+		modelPoints.push_back(edge.Start.Position);
+		modelPoints.push_back(edge.End.Position);
+	}
+
+	// Calculate the boundingBox based on the points extracted from the edges
+	if (!modelPoints.empty())
+	{
+		BoundingBox boundingBox = BoundingBox::CalculateBoundingBox(modelPoints);
+		camera.FitTargetBox(boundingBox);
+	}
+
+	//// Calculate the boundingBox
+	//BoundingBox box = BoundingBox().CalculateBoundingBox(points);
+	//camera.Zoom = box.GetModelRadius() * 1.5;
+	//camera.Target = box.GetCenter();
 
 	while (!glfwWindowShouldClose(window))
 	{

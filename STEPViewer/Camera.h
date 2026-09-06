@@ -1,5 +1,7 @@
 #pragma once
 #include <GLFW/glfw3.h>
+#include "Point3D.h"
+#include "BoundingBox.h"
 
 class Camera
 {
@@ -9,6 +11,8 @@ public:
 	float Pitch;   // Up/Down rotation angle
 	float Zoom;
 
+	Point3D Target;
+
 public:
 	Camera();
 
@@ -17,4 +21,6 @@ public:
 	void ApplyView();
 
 	void HandleInput(GLFWwindow* window);
+
+	void FitTargetBox(const BoundingBox& boundingBox);
 };

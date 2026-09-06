@@ -21,6 +21,24 @@ void Renderer::DrawLine(const Line3D& line)
 	glEnd();
 }
 
+void Renderer::DrawCircle(const Circle3D& circle)
+{
+	glLineWidth(2.0f);
+	glBegin(GL_LINES);
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+	int segmentCount = 64;
+	std::vector<Point3D> points = circle.CreatePolyline(segmentCount);
+
+	for (int i = 0; i < points.size() - 1; i++)
+	{
+		DrawLine(
+			Line3D(
+				points[i],
+				points[i + 1]));
+	}
+}
+
 void Renderer::DrawVertex(const Vertex& vertex)
 {
 	Renderer::DrawPoint(vertex.Position);

@@ -75,12 +75,11 @@ int main()
 		// Draw Wireframe cube from the step file
 		//reader.DrawPoints(renderer, points);
 
-
 		reader.DrawVertices(renderer, vertices);
 		reader.DrawEdges(renderer, edges);
-
 		reader.DrawLines(renderer, lines3D);
-
+		reader.DrawCircles(renderer, circles);
+		
 		glfwSwapBuffers(window);
 		glfwPollEvents();   // handle the mouse/keyboard inputs
 		camera.HandleInput(window);

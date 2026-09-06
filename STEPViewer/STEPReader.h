@@ -32,4 +32,5 @@ public:
 	void DrawVertices(Renderer& renderer, std::vector<Vertex>& vertices);
 	void DrawEdges(Renderer& renderer, std::vector<Edge> edges);
 	void DrawLines(Renderer& renderer, std::vector<Line3D> lines);
+	void DrawCircles(Renderer& renderer, std::vector<Circle3D> circles);
 };

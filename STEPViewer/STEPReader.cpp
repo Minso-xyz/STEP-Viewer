@@ -78,7 +78,7 @@ Point3D STEPReader::ParseVertexPoint(const std::string& line)
 {
 	// Line: #20=VERTEX_POINT('',#10);
 	int start = line.find(',');
-	std::string idStr = line.substr(start + 1, 10);  // #10);
+	std::string idStr = line.substr(start + 1, 50);  // #10);
 
 	std::stringstream ss(idStr);
 	std::string pointId;
@@ -189,7 +189,7 @@ Circle3D STEPReader::ParseCircle(const std::string& line)
 {
 	// #2124 = CIRCLE('', #2337, 55.);
 	int start = line.find(',');
-	std::string idStr = line.substr(start + 1, 20);   // returns #2337, 55.);
+	std::string idStr = line.substr(start + 1, 50);   // returns #2337, 55.);
 
 	std::stringstream ss(idStr);
 	std::string positionId;
@@ -375,6 +375,14 @@ void STEPReader::DrawLines(Renderer& renderer, std::vector<Line3D> lines)
 	for (const auto& line : lines)
 	{
 		renderer.DrawLine(line);
+	}
+}
+
+void STEPReader::DrawCircles(Renderer& renderer, std::vector<Circle3D> circles)
+{
+	for (const auto& circle : circles)
+	{
+		renderer.DrawCircle(circle);
 	}
 }
 

@@ -19,6 +19,21 @@ Wireframe cube rendered from STEP geometry.
 
 ![STEPViewer](Screenshot.png) 
 
+Wireframe cube rendered image
+
+
+
+![STEPViewer](ImpellerOpenStep.png) 
+
+Open Impeller Step file
+
+
+
+
+![STEPViewer](ImpellerOpenRendered.png) 
+
+Open Impeller Rendered image
+
 ## Current Features
 - GLFW Window Creation
 - OpenGL Context Initialization
@@ -30,17 +45,15 @@ Wireframe cube rendered from STEP geometry.
 - CARTESIAN_POINT Parsing
 - VERTEX_POINT Parsing
 - EDGE_CURVE Parsing
+- STEP EDGE_CURVE parsing
 - Point Rendering
 - Vertex Rendering
 - Edge Rendering
-- STEP Wireframe Rendering (Prototype)
+- STEP wireframe rendering
  
 ## Planned Features
-- STEP EDGE_CURVE parsing
-- STEP wireframe rendering
 - STEP face visualization
 - Camera panning
-- STEP model loading
 - GeoKernel3D topology visualization
 - GeoKernel3D integration
  

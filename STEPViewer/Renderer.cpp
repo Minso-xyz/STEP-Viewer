@@ -32,10 +32,19 @@ void Renderer::DrawCircle(const Circle3D& circle)
 
 	for (int i = 0; i < points.size() - 1; i++)
 	{
-		DrawLine(
-			Line3D(
-				points[i],
-				points[i + 1]));
+		DrawLine(Line3D(points[i],points[i + 1]));
+	}
+}
+
+void Renderer::DrawPolyline(const std::vector<Point3D>& points)
+{
+	glLineWidth(2.0f);
+	glBegin(GL_LINES);
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+	for (int i = 0; i < points.size() -1; i++)
+	{
+		DrawLine(Line3D(points[i], points[i + 1]));
 	}
 }
 

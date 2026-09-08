@@ -15,6 +15,13 @@ public:
 
 public:
 	Camera();
+	void SetFrontView();
+	void SetBackView();
+	void SetLeftView();
+	void SetRightView();
+	void SetTopView();
+	void SetBottomView();
+	void SetIsometricView();
 
 	void ApplyProjection(int width, int height);
 

@@ -10,6 +10,48 @@ Camera::Camera()
 	Zoom = 300.0f;
 }
 
+void Camera::SetFrontView()
+{
+	Yaw = 0.0f;
+	Pitch = 0.0f;
+}
+
+void Camera::SetBackView()
+{
+	Yaw = 180.0f;
+	Pitch = 0.0f;
+}
+
+void Camera::SetLeftView()
+{
+	Yaw = -90.0f;
+	Pitch = 0.0f;
+}
+
+void Camera::SetRightView()
+{
+	Yaw = 90.0f;
+	Pitch = 0.0f;
+}
+
+void Camera::SetTopView()
+{
+	Yaw = 0.0f;
+	Pitch = -90.0f;
+}
+
+void Camera::SetBottomView()
+{
+	Yaw = 0.0f;
+	Pitch = 90.0f;
+}
+
+void Camera::SetIsometricView()
+{
+	Yaw = 45.0f;
+	Pitch = -35.264f;
+}
+
 void Camera::ApplyProjection(int width, int height)
 {
 	if (height == 0)

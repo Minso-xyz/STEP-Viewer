@@ -8,6 +8,7 @@
 #include "STEPReader.h"
 #include "Circle3D.h"
 #include "BoundingBox.h"
+#include "BSplineCurve.h"
 
 int main()
 {
@@ -31,8 +32,6 @@ int main()
 	Camera camera;
 	Renderer renderer;
 	STEPReader reader;
-
-	
 
 	//// Read the WireframeCube.stp file
 	//std::vector<std::string> lines = reader.ReadAllLines("..\\WireframeCube.stp");
@@ -92,6 +91,8 @@ int main()
 		reader.DrawEdges(renderer, edges);
 		reader.DrawLines(renderer, lines3D);
 		reader.DrawCircles(renderer, circles);
+
+		camera.SetIsometricView();
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();   // handle the mouse/keyboard inputs

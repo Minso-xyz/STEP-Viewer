@@ -40,13 +40,18 @@ void Renderer::DrawCircle(const Circle3D& circle)
 void Renderer::DrawPolyline(const std::vector<Point3D>& points)
 {
 	glLineWidth(2.0f);
-	glBegin(GL_LINES);
 	glColor3f(1.0f, 1.0f, 1.0f);
+	glBegin(GL_LINE_STRIP);
 
-	for (int i = 0; i < points.size() -1; i++)
+	for (const Point3D& point : points)
 	{
-		DrawLine(Line3D(points[i], points[i + 1]));
+		glVertex3d(
+			point.X,
+			point.Y,
+			point.Z
+		);
 	}
+	glEnd();
 }
 
 void Renderer::DrawBSplineCurve(const BSplineCurve& curve)

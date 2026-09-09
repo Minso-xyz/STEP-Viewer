@@ -11,6 +11,7 @@
 #include "Circle3D.h"
 #include "Axis2Placement3D.h"
 #include "BoundingBox.h"
+#include "BSplineCurve.h"
 
 std::vector<std::string> STEPReader::ReadAllLines(const std::string& filePath)
 {
@@ -47,6 +48,22 @@ void STEPReader::BuildEntityMap(const std::vector<std::string>& lines)
 		std::string id = line.substr(0, idLength);
 		entityMap[id] = line;
 	}
+}
+
+std::string STEPReader::GetCompleteEntity(int startLineIndex, std::vector<std::string> lines)
+{
+	std::string entityComplete;
+
+	for (int i = startLineIndex; i < lines.size(); i++)
+	{
+		entityComplete += lines[i];
+
+		if (lines[i].find(';') != std::string::npos)
+		{
+			break;
+		}
+	}
+	return entityComplete;
 }
 
 Point3D STEPReader::ParseCartesianPoint(const std::string& line)
@@ -235,6 +252,210 @@ Axis2Placement3D STEPReader::ParseAxis2Placement3D(const std::string& line)
 	return Axis2Placement3D(origin, normal, xDirection);
 }
 
+// #115=B_SPLINE_CURVE_WITH_KNOTS
+	// ('',
+	// 3,    <------------------------------------ Degree (Cubic B-Spline)
+	// (
+	// #3597,#3598,#3599,#3600,      <------------ ControlPoints (total 16)
+	// #3601,#3602, #3603, #3604, 
+	// #3605, #3606, #3607, #3608, 
+	// #3609, #3610, #3611, #3612
+	// ),
+	// 
+	// .UNSPECIFIED.,        <-------------------- .UNSPECIFIED./ .POLYLINE_FORM./ .CIRCULAR_ARC./ .ELLIPTIC_ARC./ .PARABOLIC_ARC.
+	// .F.,                  <-------------------- CloasedCurve = false; Open Curve
+	// .F.,                  <-------------------- SelfIntersect = false
+	// 
+	// (4, 2, 2, 2, 2, 2, 2, 4),    <------------ KnotMultiplicities
+	// 
+	// (                                      *** DistinctKnots
+	// 0.,                   <------------------- repeats 4 x 0.0 
+	// 0.125,                <------------------- repeats 2 x 0.125 
+	// 0.249999999999999,    <------------------- repeats 2 x 0.24999...
+	// 0.499999999999999,    <------------------- repeats 2 x 0.499999...
+	// 0.624999999999999,    <------------------- repeats 2 x 0.624999...
+	// 0.749999999999999,    <------------------- repeats 2 x 0.749999...
+	// 0.875,                <------------------- repeats 2 x 0.875
+	// 1.),                  <------------------- repeats 4 x 1.0
+	// 
+	// .UNSPECIFIED.         <------------------- KNOT_TYPE (Enum); .UNIFORM_KNOTS./ .QUASI_UNIFORM_KNOTS./ .PIECEWISE_BEZIER_KNOTS./ .UNSPECIFIED.
+	// );
+
+	// #115=B_SPLINE_CURVE_WITH_KNOTS('',3,(#3597,#3598,#3599,#3600,#3601,#3602,
+	// #3603, #3604, #3605, #3606, #3607, #3608, #3609, #3610, #3611, #3612),
+	// .UNSPECIFIED., .F., .F., (4, 2, 2, 2, 2, 2, 2, 4), (0., 0.125, 0.249999999999999, 0.499999999999999,
+	// 0.624999999999999, 0.749999999999999, 0.875, 1.), .UNSPECIFIED.);
+
+BSplineCurve STEPReader::ParseBSplineCurveWithKnots(const std::string line)
+{
+	auto tokens = SplitTopLevelParameters(line);
+	int degree = std::stoi(tokens[1]);
+	std::string controlPointBlock = tokens[2];
+	std::string multiplicityBlock = tokens[6];
+	std::string knotBlock = tokens[7];
+
+	// Parse Control points
+	std::vector<Point3D> controlPoints = ParseControlPoints(controlPointBlock);
+
+	// Parse multiplicity numbers
+	std::vector<int> multiplicityNums = ParseMultiplicityNumbers(multiplicityBlock);
+
+	// Parse Knots
+	std::vector<double> knots = ParseKnots(knotBlock);
+
+	// Multiple the number of the knots
+	std::vector<double> finalKnots = CalculateFinalKnots(multiplicityNums, knots);
+
+	return BSplineCurve(
+		controlPoints,
+		finalKnots,
+		degree
+	);
+}
+
+// Split the long line of entity and sort the types of parameters
+
+// Example of the raw entity data
+// '', 3,
+// (#1, #2, #3),
+// .F.,
+// (4, 2, 2, 4),
+// (0.0, 0.5, 1.0)
+
+// Result
+// tokens[0] = ''
+// tokens[1] = 3
+// tokens[2] = (#1, #2, #3)
+// tokens[3] = .F.
+// tokens[4] = (4, 2, 2, 4)
+// tokens[5] = (0.0, 0.5, 1.0)
+std::vector<std::string> STEPReader::SplitTopLevelParameters(const std::string& text)
+{
+	std::vector<std::string> tokens;
+	std::string current;
+	int depth = 0;
+
+	for (char c : text)
+	{
+		if (c == '(')
+		{
+			depth++;
+			current += c;
+		}
+		else if (c == ')')
+		{
+			depth--;
+			current += c;
+		}
+		else if (c == ',' && depth == 0)
+		{
+			tokens.push_back(current);
+			current.clear();
+		}
+		else
+		{
+			current += c;
+		}
+	}
+
+	if (!current.empty())
+	{
+		tokens.push_back(current);
+	}
+	return tokens;
+}
+
+std::vector<Point3D> STEPReader::ParseControlPoints(std::string controlPointsBlock)
+{
+	// controlPointsBlock : (#1, #2, #3, ...)
+	int start = controlPointsBlock.find('(');
+	int end = controlPointsBlock.find(')');
+	std::string strPoints = controlPointsBlock.substr(start + 1, end - (start + 1));
+
+	// Extract the id of the cartesian points
+	std::stringstream ss(strPoints);
+	std::vector<std::string> cartesianPointIds;
+	std::string id;
+	while (std::getline(ss, id, ','))
+	{
+		cartesianPointIds.push_back(id);
+	}
+
+	// Extract the entity line of the cartesian points
+	std::vector<std::string> entityLines;
+	std::string entityLine;
+	for (auto id : cartesianPointIds)
+	{
+		entityLine = entityMap[id];
+		entityLines.push_back(entityLine);
+	}
+
+	// Parse the cartesian points
+	std::vector<Point3D> controlPoints;
+	Point3D controlPoint;
+	for (auto entityLine : entityLines)
+	{
+		controlPoint = ParseCartesianPoint(entityLine);
+		controlPoints.push_back(controlPoint);
+	}
+	return controlPoints;
+}
+
+std::vector<int> STEPReader::ParseMultiplicityNumbers(std::string multiplicityBlock)
+{
+	// Multiplicity block : (4, 2, 2, 4)
+	int start = multiplicityBlock.find('(');
+	int end = multiplicityBlock.find(')');
+	std::string strMultiNums = multiplicityBlock.substr(start + 1, end - (start + 1));
+
+	// Extract Multiplicity numbers
+	std::stringstream ss(strMultiNums);
+	std::vector<int> multiplicityNums;
+	std::string multiplicityNum;
+	while (std::getline(ss, multiplicityNum, ','))
+	{
+		multiplicityNums.push_back(std::stoi(multiplicityNum));
+	}
+	return multiplicityNums;
+}
+
+std::vector<double> STEPReader::ParseKnots(std::string knotBlock)
+{
+	// Knot block : (0.0, 0.5, 1.0)
+	int start = knotBlock.find('(');
+	int end = knotBlock.find(')');
+	std::string strKnots = knotBlock.substr(start + 1, end - (start + 1));
+
+	// Extract Knots
+	std::stringstream ss(strKnots);
+	std::vector<double> knots;
+	std::string knot;
+	while (std::getline(ss, knot, ','))
+	{
+		knots.push_back(std::stoi(knot));
+	}
+	return knots;
+}
+
+std::vector<double> STEPReader::CalculateFinalKnots(std::vector<int> multiplicityNums, std::vector<double> knots)
+{
+	std::vector<double> knotsFinal;
+
+	if (knots.size() != multiplicityNums.size())
+	{
+		throw std::runtime_error("Knot and multiplicity counts do not match.");
+	}
+
+	for (int i = 0; i < knots.size(); i++)
+	{
+		for (int j = 0; j < multiplicityNums[i]; j++)
+		{
+			knotsFinal.push_back(knots[i]);
+		}
+	}
+	return knotsFinal;
+}
+
 std::vector<Vertex> STEPReader::ExtractVerticesFromAllLines(std::vector<std::string> lines)
 {
 	std::vector<Vertex> vertices;
@@ -345,6 +566,22 @@ std::vector<Circle3D> STEPReader::ExtractCirclesFromAllLines(std::vector<std::st
 		}
 	}
 	return circles;
+}
+
+std::vector<BSplineCurve> STEPReader::ExtractBSplineCurvesFromAllLines(std::vector<std::string> lines)
+{
+	std::vector<BSplineCurve> curves;
+
+	for (int i = 0; i<lines.size();i++)
+	{
+		if (lines[i].find("=B_SPLINE_CURVE_WITH_KNOTS") != std::string::npos)
+		{
+			std::string entity = GetCompleteEntity(i, lines);
+			BSplineCurve curve = ParseBSplineCurveWithKnots(entity);
+			curves.push_back(curve);
+		}
+	}
+	return curves;
 }
 
 void STEPReader::DrawPoints(Renderer& renderer, std::vector<Point3D> points)

@@ -124,25 +124,25 @@ void Camera::HandleInput(GLFWwindow* window)
 	// Orbit Left
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
 	{
-		Yaw -= 0.05f;
+		Yaw -= Yaw * 0.005f;
 	}
 
 	// Orbit Right
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 	{
-		Yaw += 0.05f;
+		Yaw += Yaw * 0.005f;
 	}
 
 	// Pitch Up
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
-		Pitch -= 0.05f;
+		Pitch -= Pitch * 0.005f;
 	}
 
 	// Pitch Down
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 	{
-		Pitch += 0.05f;
+		Pitch += Pitch * 0.005f;
 	}
 }
 

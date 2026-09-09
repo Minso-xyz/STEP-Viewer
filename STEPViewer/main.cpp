@@ -54,6 +54,8 @@ int main()
 	BoundingBox boundingBox = BoundingBox::CreateFromEdgePoints(edges);
 	camera.FitTargetBox(boundingBox);
 
+	camera.SetIsometricView();
+
 	//// Calculate the boundingBox
 	//BoundingBox box = BoundingBox().CalculateBoundingBox(points);
 	//camera.Zoom = box.GetModelRadius() * 1.5;
@@ -94,8 +96,6 @@ int main()
 		reader.DrawCircles(renderer, circles);
 		reader.DrawBSplineCurves(renderer, curves);
 
-		camera.SetIsometricView();
-		
 		glfwSwapBuffers(window);
 		glfwPollEvents();   // handle the mouse/keyboard inputs
 		camera.HandleInput(window);

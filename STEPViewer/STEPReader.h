@@ -43,6 +43,7 @@ public:
 	void DrawEdges(Renderer& renderer, std::vector<Edge> edges);
 	void DrawLines(Renderer& renderer, std::vector<Line3D> lines);
 	void DrawCircles(Renderer& renderer, std::vector<Circle3D> circles);
+	void DrawBSplineCurves(Renderer& renderer, std::vector<BSplineCurve> curves);
 	BoundingBox CalculateBoundingBox(std::vector<Point3D> points);
 	Point3D GetModelCenter(BoundingBox boundingBox);
 	double GetModelRadius(BoundingBox boundingBox);

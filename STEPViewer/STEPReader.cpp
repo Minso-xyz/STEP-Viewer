@@ -630,6 +630,14 @@ void STEPReader::DrawCircles(Renderer& renderer, std::vector<Circle3D> circles)
 	}
 }
 
+void STEPReader::DrawBSplineCurves(Renderer& renderer, std::vector<BSplineCurve> curves)
+{
+	for (const auto& curve : curves)
+	{
+		renderer.DrawBSplineCurve(curve);
+	}
+}
+
 
 
 

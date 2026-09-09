@@ -47,6 +47,7 @@ int main()
 	std::vector<Vector3D> vectors = reader.ExtractVectorsFromAllLines(lines);
 	std::vector<Line3D> lines3D = reader.ExtractLinesFromAllLines(lines);
 	std::vector<Circle3D> circles = reader.ExtractCirclesFromAllLines(lines);
+	std::vector<BSplineCurve> curves = reader.ExtractBSplineCurvesFromAllLines(lines);
 
 	
 	// Use the boundingBox based on the points extracted from the edges
@@ -91,6 +92,7 @@ int main()
 		reader.DrawEdges(renderer, edges);
 		reader.DrawLines(renderer, lines3D);
 		reader.DrawCircles(renderer, circles);
+		reader.DrawBSplineCurves(renderer, curves);
 
 		camera.SetIsometricView();
 		

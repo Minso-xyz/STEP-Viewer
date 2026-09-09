@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include <GLFW/glfw3.h>
 #include <vector>
+#include "BSplineCurve.h"
 
 void Renderer::DrawPoint(const Point3D& point)
 {
@@ -46,6 +47,12 @@ void Renderer::DrawPolyline(const std::vector<Point3D>& points)
 	{
 		DrawLine(Line3D(points[i], points[i + 1]));
 	}
+}
+
+void Renderer::DrawBSplineCurve(const BSplineCurve& curve)
+{
+	std::vector<Point3D> points = curve.CreatePolyline(100);
+	DrawPolyline(points);
 }
 
 void Renderer::DrawVertex(const Vertex& vertex)

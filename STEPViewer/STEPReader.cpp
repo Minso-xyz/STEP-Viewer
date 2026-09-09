@@ -288,7 +288,13 @@ Axis2Placement3D STEPReader::ParseAxis2Placement3D(const std::string& line)
 
 BSplineCurve STEPReader::ParseBSplineCurveWithKnots(const std::string line)
 {
-	auto tokens = SplitTopLevelParameters(line);
+	// Remove the entity name from the line
+	size_t start = line.find('(');
+	size_t end = line.rfind(')');
+	std::string parameters = line.substr(start + 1,end - start - 1);
+
+	// Split the parameter into degree, controlPoints, multiplicityCounts, and knots
+	auto tokens = SplitTopLevelParameters(parameters);
 	int degree = std::stoi(tokens[1]);
 	std::string controlPointBlock = tokens[2];
 	std::string multiplicityBlock = tokens[6];

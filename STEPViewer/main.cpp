@@ -10,6 +10,10 @@
 #include "BoundingBox.h"
 #include "BSplineCurve.h"
 
+Camera* gCamera = nullptr;
+
+void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset);
+
 int main()
 {
 	if (!glfwInit())
@@ -26,10 +30,11 @@ int main()
 	}
 
 	glfwMakeContextCurrent(window);
-
 	glEnable(GL_DEPTH_TEST);
+	glfwSetScrollCallback(window, ScrollCallback);
 
 	Camera camera;
+	gCamera = &camera;
 	Renderer renderer;
 	STEPReader reader;
 
@@ -74,6 +79,8 @@ int main()
 		camera.ApplyView();
 		renderer.DrawCoordinateAxis();
 
+		camera.HandleMouse(window);
+
 		//// Draw Point
 		//Point3D point(0.5, 0.3, 0.0);
 		//renderer.DrawPoint(point);
@@ -104,4 +111,12 @@ int main()
 	glfwTerminate();
 
 	return 0;
+}
+
+void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
+{
+	if (gCamera)
+	{
+		gCamera->HandleScroll(yOffset);  // only yOffset is used (Up-down mouse wheel)
+	}
 }
